@@ -1,0 +1,11 @@
+{
+  "watch": ["server"],
+  "ext": "js,json",
+  "ignore": [
+    "frontend/**",
+    "python_service/**",
+    "node_modules/**",
+    ".git/**"
+  ],
+  "delay": "500"
+}
