@@ -22,7 +22,10 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for Node.js backend
 
 # Initialize face engine
-face_engine = FaceEngine(embedding_dim=512)
+face_engine = FaceEngine(
+    embedding_dim=512,
+    storage_dir=os.path.join(os.path.dirname(__file__), 'data')
+)
 
 def base64_to_image(base64_str):
     """Convert base64 string to OpenCV image."""

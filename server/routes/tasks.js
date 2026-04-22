@@ -43,9 +43,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/complete', async (req, res) => {
+const completeTask = async (req, res, taskId, confirmedBy = 'button') => {
   try {
-    const { taskId, confirmedBy = 'button' } = req.body;
     const task = await Task.findById(taskId);
 
     if (!task) {
@@ -96,6 +95,15 @@ router.post('/complete', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+router.post('/complete', async (req, res) => {
+  const { taskId, confirmedBy = 'button' } = req.body;
+  return completeTask(req, res, taskId, confirmedBy);
+});
+
+router.put('/:id/complete', async (req, res) => {
+  return completeTask(req, res, req.params.id, req.body?.confirmedBy || 'button');
 });
 
 module.exports = router;

@@ -228,8 +228,8 @@ const PatientPersonRecognition = ({ patientId, onAnnouncement }: PatientPersonRe
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Recognition failed";
-      if (message.toLowerCase().includes("python service unavailable")) {
-        setError("Python face service unavailable. Start it with npm run dev (now includes python:dev) or ensure port 5002 is running.");
+      if (message.toLowerCase().includes("face recognition service unavailable")) {
+        setError("Face recognition service unavailable. Make sure the backend and Python face service are running.");
       } else {
         setError(message);
       }

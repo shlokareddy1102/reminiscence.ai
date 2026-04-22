@@ -134,8 +134,8 @@ export default function PatientInviteCodeCard() {
           </div>
 
           {/* Instructions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm text-blue-900">
+          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
+            <p className="text-sm text-foreground">
               <strong>How to share:</strong> Send this code to your caregiver. They'll enter it in their app to get access to your health information.
             </p>
           </div>

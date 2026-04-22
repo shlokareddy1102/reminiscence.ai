@@ -73,6 +73,8 @@ app.use('/api/calendar', require('./routes/calendar'));
 app.use('/api/location', require('./routes/location'));
 app.use('/api/insights', require('./routes/insights'));
 app.use('/api/cognitive', require('./routes/cognitive'));
+app.use('/api/companion', require('./routes/companion'));
+app.use('/api/music', require('./routes/music'));
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });

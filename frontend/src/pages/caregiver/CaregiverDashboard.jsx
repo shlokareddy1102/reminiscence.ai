@@ -14,9 +14,9 @@ import {
   UserPlus
 } from "lucide-react";
 import KnownPeopleManager from "@/components/caregiver/KnownPeopleManager";
+import MusicProfileForm from "@/components/caregiver/MusicProfileForm";
 import PatientSwitcher from "@/components/caregiver/PatientSwitcher";
 import HealthStatCard from "@/components/caregiver/dashboard/HealthStatCard";
-import TrendBars from "@/components/caregiver/dashboard/TrendBars";
 import { useCaregiverPatients } from "@/hooks/use-caregiver-patients";
 import { apiRequest } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
@@ -36,8 +36,6 @@ const mapAlerts = (alerts = []) =>
     severity: item.riskLevel === "HIGH" ? "high" : item.riskLevel === "MEDIUM" ? "medium" : "low"
   }));
 
-const scoreSleep = (sleep) => (sleep === "good" ? 90 : sleep === "disturbed" ? 55 : 25);
-const scoreMood = (mood) => (mood === "calm" ? 90 : mood === "confused" ? 55 : 25);
 const scoreActivity = (activity) => (activity === "high" ? 90 : activity === "medium" ? 60 : activity === "low" ? 30 : 20);
 const scoreLocationSafety = ({ gotLost, highRiskAlerts }) => {
   if (gotLost) return 25;
@@ -160,15 +158,6 @@ const CaregiverDashboard = () => {
   const medicationTone = medicationAdherence >= 80 ? "good" : medicationAdherence >= 50 ? "warning" : "critical";
   const locationTone = locationSafetyScore >= 75 ? "good" : locationSafetyScore >= 45 ? "warning" : "critical";
   const activityTone = activityScore >= 75 ? "good" : activityScore >= 45 ? "warning" : "critical";
-
-  const trendData = useMemo(() => {
-    const recent = patientLogs.slice(-7);
-    return {
-      medication: recent.map((log) => (log.medication === "taken" ? 100 : log.medication === "missed" ? 25 : 45)),
-      mood: recent.map((log) => scoreMood(log.mood)),
-      sleep: recent.map((log) => scoreSleep(log.sleep))
-    };
-  }, [patientLogs]);
 
   const weeklySummary = useMemo(() => {
     const weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
@@ -368,6 +357,8 @@ const CaregiverDashboard = () => {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <MusicProfileForm patientId={selectedPatientId} />
+
         <div className="bg-card border border-border rounded-xl p-4 shadow-gentle">
           <div className="flex items-center gap-2 mb-3">
             <CalendarCheck className="w-4 h-4 text-primary" />
@@ -438,17 +429,7 @@ const CaregiverDashboard = () => {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-card border border-border rounded-xl p-4 shadow-gentle">
-          <h2 className="text-base font-display font-semibold text-foreground mb-3">Trends</h2>
-          <div className="grid grid-cols-1 gap-3">
-            <TrendBars title="Medication adherence trend" data={trendData.medication} colorClass="bg-safe" />
-            <TrendBars title="Mood trend" data={trendData.mood} colorClass="bg-primary" />
-            <TrendBars title="Sleep trend" data={trendData.sleep} colorClass="bg-warning" />
-          </div>
-        </div>
-
-        <div className="space-y-4">
+      <section className="space-y-4">
           <div className="bg-card border border-border rounded-xl p-4 shadow-gentle">
             <div className="flex items-center gap-2 mb-3">
                 <Brain className="w-4 h-4 text-primary" />
@@ -481,7 +462,6 @@ const CaregiverDashboard = () => {
                 </div>
             </div>
           </div>
-        </div>
       </section>
 
       {unknownPersonAlert && (
@@ -627,4 +607,3 @@ const CaregiverDashboard = () => {
 };
 
 export default CaregiverDashboard;
-

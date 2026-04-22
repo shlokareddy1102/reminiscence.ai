@@ -1,3 +1,6 @@
+import os
+import pickle
+
 import numpy as np
 import cv2
 import faiss
@@ -6,7 +9,7 @@ from insightface.app import FaceAnalysis
 class FaceEngine:
     """Production-grade face recognition engine using InsightFace + FAISS."""
     
-    def __init__(self, embedding_dim=512):
+    def __init__(self, embedding_dim=512, storage_dir=None):
         """Initialize InsightFace model and FAISS index."""
         self.app = FaceAnalysis(providers=['CPUExecutionProvider'])
         self.app.prepare(ctx_id=0, det_size=(640, 640))
@@ -15,6 +18,11 @@ class FaceEngine:
         self.index = faiss.IndexFlatL2(embedding_dim)
         self.person_ids = []  # Maps index position to person ID
         self.person_metadata = {}  # Maps person ID to metadata (name, relationship, etc.)
+        self.storage_dir = storage_dir or os.path.join(os.path.dirname(__file__), 'data')
+        self.index_path = os.path.join(self.storage_dir, 'face_index.faiss')
+        self.meta_path = os.path.join(self.storage_dir, 'face_index_meta.pkl')
+
+        self.load_state()
     
     def get_embedding(self, image):
         """
@@ -127,7 +135,49 @@ class FaceEngine:
 
         diagnostics['indexed_embeddings'] = int(self.index.ntotal)
         diagnostics['indexed_unique_people'] = len(set(self.person_ids))
+
+        self.save_state()
         return diagnostics
+
+    def save_state(self):
+        """Persist FAISS index and metadata to disk."""
+        try:
+            os.makedirs(self.storage_dir, exist_ok=True)
+            faiss.write_index(self.index, self.index_path)
+            with open(self.meta_path, 'wb') as handle:
+                pickle.dump({
+                    'embedding_dim': self.embedding_dim,
+                    'person_ids': self.person_ids,
+                    'person_metadata': self.person_metadata,
+                }, handle)
+            print(f"Saved face index to {self.index_path}")
+            return True
+        except Exception as error:
+            print(f"Warning: failed to save face index state: {error}")
+            return False
+
+    def load_state(self):
+        """Load FAISS index and metadata from disk if available."""
+        try:
+            if not (os.path.exists(self.index_path) and os.path.exists(self.meta_path)):
+                return False
+
+            self.index = faiss.read_index(self.index_path)
+            with open(self.meta_path, 'rb') as handle:
+                payload = pickle.load(handle)
+
+            self.embedding_dim = int(payload.get('embedding_dim', self.embedding_dim))
+            self.person_ids = list(payload.get('person_ids', []))
+            self.person_metadata = dict(payload.get('person_metadata', {}))
+
+            print(f"Loaded face index from {self.index_path} with {self.index.ntotal} embeddings")
+            return True
+        except Exception as error:
+            print(f"Warning: failed to load face index state: {error}")
+            self.index = faiss.IndexFlatL2(self.embedding_dim)
+            self.person_ids = []
+            self.person_metadata = {}
+            return False
     
     def recognize(self, image, top_k=1, threshold=0.8):
         """

@@ -8,26 +8,25 @@
  
  @layer base {
    :root {
-     --background: 218 44% 98%;
-     --foreground: 220 28% 20%;
+     --background: 0 0% 100%;
+     --foreground: 265 28% 18%;
  
      --card: 0 0% 100%;
-     --card-foreground: 220 28% 20%;
+     --card-foreground: 265 28% 18%;
  
      --popover: 0 0% 100%;
-     --popover-foreground: 220 28% 20%;
+     --popover-foreground: 265 28% 18%;
  
-     /* Primary/Accent from requested teal + sage direction */
-     --primary: 205 56% 46%;
+     --primary: 264 64% 32%;
      --primary-foreground: 0 0% 100%;
- 
-     --secondary: 206 30% 94%;
-     --secondary-foreground: 205 30% 28%;
- 
-     --muted: 206 22% 95%;
-     --muted-foreground: 215 16% 45%;
- 
-     --accent: 160 30% 38%;
+
+     --secondary: 264 45% 96%;
+     --secondary-foreground: 265 28% 24%;
+
+     --muted: 264 20% 96%;
+     --muted-foreground: 265 14% 42%;
+
+     --accent: 268 45% 52%;
      --accent-foreground: 0 0% 100%;
  
      --safe: 145 58% 42%;
@@ -40,25 +39,56 @@
      --destructive: 10 73% 57%;
      --destructive-foreground: 0 0% 100%;
  
-     --border: 206 25% 88%;
-     --input: 206 24% 92%;
-     --ring: 205 56% 46%;
+     --border: 264 24% 88%;
+     --input: 264 22% 93%;
+     --ring: 264 64% 32%;
  
      --radius: 1rem;
  
      /* Sidebar - For caregiver dashboard */
-     --sidebar-background: 206 36% 97%;
-     --sidebar-foreground: 220 28% 23%;
-     --sidebar-primary: 205 56% 46%;
+     --sidebar-background: 266 64% 92%;
+     --sidebar-foreground: 265 30% 20%;
+     --sidebar-primary: 264 64% 32%;
      --sidebar-primary-foreground: 0 0% 100%;
-     --sidebar-accent: 206 25% 93%;
-     --sidebar-accent-foreground: 220 28% 20%;
-     --sidebar-border: 206 24% 89%;
-     --sidebar-ring: 205 56% 46%;
- 
-     --patient-gradient: linear-gradient(135deg, hsl(205 56% 46%) 0%, hsl(160 30% 38%) 100%);
-     --calm-shadow: 0 8px 30px -10px hsl(205 56% 46% / 0.25);
-     --gentle-shadow: 0 4px 20px -8px hsl(220 28% 20% / 0.18);
+     --sidebar-accent: 266 52% 87%;
+     --sidebar-accent-foreground: 265 30% 20%;
+     --sidebar-border: 266 35% 82%;
+     --sidebar-ring: 264 64% 32%;
+
+     --patient-gradient: linear-gradient(135deg, hsl(266 52% 96%) 0%, hsl(266 45% 92%) 100%);
+     --calm-shadow: 0 8px 30px -10px hsl(264 64% 32% / 0.22);
+     --gentle-shadow: 0 4px 20px -8px hsl(265 28% 18% / 0.15);
+   }
+
+   .music-theme {
+     --background: 252 34% 96%;
+     --foreground: 258 23% 16%;
+
+     --card: 0 0% 100%;
+     --card-foreground: 258 23% 16%;
+
+     --popover: 0 0% 100%;
+     --popover-foreground: 258 23% 16%;
+
+     --primary: 257 53% 52%;
+     --primary-foreground: 0 0% 100%;
+
+     --secondary: 257 40% 93%;
+     --secondary-foreground: 258 23% 20%;
+
+     --muted: 255 25% 93%;
+     --muted-foreground: 255 14% 45%;
+
+     --accent: 269 39% 59%;
+     --accent-foreground: 0 0% 100%;
+
+     --border: 254 27% 88%;
+     --input: 254 25% 91%;
+     --ring: 257 53% 52%;
+
+     --patient-gradient: linear-gradient(135deg, hsl(257 53% 52%) 0%, hsl(269 39% 59%) 100%);
+     --calm-shadow: 0 8px 30px -10px hsl(257 53% 52% / 0.24);
+     --gentle-shadow: 0 4px 20px -8px hsl(258 23% 16% / 0.18);
    }
  
    .dark {
@@ -114,7 +144,7 @@
    }
  
    html {
-     font-size: 18px;
+     font-size: clamp(15px, 0.2vw + 14.5px, 17px);
    }
  
    body {
@@ -130,7 +160,7 @@
  @layer components {
    /* Patient-specific calm styles */
    .patient-container {
-     @apply min-h-screen bg-gradient-to-br from-background via-secondary/40 to-accent/10 p-6 md:p-8;
+     @apply min-h-screen bg-background p-4 md:p-6;
    }
  
    .patient-card {
@@ -141,6 +171,30 @@
      @apply bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-xl font-semibold
             shadow-calm hover:shadow-gentle transition-all duration-300 
             hover:scale-[1.02] active:scale-[0.98];
+   }
+
+   .patient-shell {
+     --background: 0 0% 100%;
+     --foreground: 265 28% 18%;
+     --primary: 264 64% 32%;
+     --primary-foreground: 0 0% 100%;
+     --secondary: 264 45% 96%;
+     --secondary-foreground: 265 28% 24%;
+     --muted: 264 20% 96%;
+     --muted-foreground: 265 14% 42%;
+     --accent: 268 45% 52%;
+     --accent-foreground: 0 0% 100%;
+     --border: 264 24% 88%;
+     --input: 264 22% 93%;
+     --ring: 264 64% 32%;
+     --sidebar-background: 266 64% 92%;
+     --sidebar-foreground: 265 30% 20%;
+     --sidebar-primary: 264 64% 32%;
+     --sidebar-primary-foreground: 0 0% 100%;
+     --sidebar-accent: 266 52% 87%;
+     --sidebar-accent-foreground: 265 30% 20%;
+     --sidebar-border: 266 35% 82%;
+     --sidebar-ring: 264 64% 32%;
    }
  
    /* Caregiver dashboard styles */

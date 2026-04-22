@@ -1,7 +1,5 @@
 import { apiRequest } from "@/lib/api";
 
-const FACE_SERVICE_URL = "http://localhost:8001";
-
 export interface KnownPerson {
   id: string;
   patientId: string;
@@ -93,28 +91,14 @@ export async function markKnownPersonVisited(id: string): Promise<void> {
 }
 
 export async function recognizePerson(image: string, threshold = 0.8): Promise<{ found: boolean; matches: RecognitionMatch[] }> {
-  const response = await fetch(`${FACE_SERVICE_URL}/recognize`, {
+  const response = await apiRequest("/api/known-people/recognize", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ image, top_k: 1, threshold })
   });
 
-  let data: { found?: boolean; matches?: RecognitionMatch[]; error?: string } | null = null;
-  try {
-    data = await response.json();
-  } catch (_err) {
-    data = null;
-  }
-
-  if (!response.ok) {
-    throw new Error(data?.error || "Face recognition request failed");
-  }
-
   return {
-    found: Boolean(data?.found),
-    matches: Array.isArray(data?.matches) ? data.matches : []
+    found: Boolean(response?.found),
+    matches: Array.isArray(response?.matches) ? response.matches : []
   };
 }
 

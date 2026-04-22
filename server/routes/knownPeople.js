@@ -1,10 +1,13 @@
 const router = require('express').Router();
+const axios = require('axios');
 const multer = require('multer');
 const KnownPerson = require('../models/KnownPerson');
 const Event = require('../models/Event');
 const ActivityLog = require('../models/ActivityLog');
 const Alert = require('../models/Alert');
 const { rebuildPythonIndex } = require('../services/faceIndexService');
+
+const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || 'http://localhost:8001';
 
 const upload = multer({ storage: multer.memoryStorage() });
 

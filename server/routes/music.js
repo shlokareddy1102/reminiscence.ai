@@ -55,6 +55,15 @@ const formatTrack = (t) => ({
   tags:         t.musicinfo?.tags?.genres || [],
 });
 
+const dedupeTracks = (tracks = []) => {
+  const seen = new Set();
+  return tracks.filter((track) => {
+    if (!track?.id || seen.has(track.id)) return false;
+    seen.add(track.id);
+    return true;
+  });
+};
+
 // ── Scoring helper (content-based filtering) ──────────────────────────────────
 const scoreTrackForProfile = (track, profile, interactions = []) => {
   let score = 0;
@@ -215,20 +224,69 @@ router.get('/:patientId/recommendations', async (req, res) => {
   }
 });
 
+// ── GET curated playlists (general songs, not profile-dependent) ─────────────
+router.get('/:patientId/playlists', async (_req, res) => {
+  try {
+    const [calmRaw, soothingRaw, singAlongRaw] = await Promise.all([
+      jamendoSearch({
+        tags: 'calm,ambient,classical',
+        speed: 'low',
+        order: 'popularity_total',
+        limit: 18,
+      }).catch(() => []),
+      jamendoSearch({
+        tags: 'acoustic,relaxation,chillout',
+        speed: 'low',
+        order: 'popularity_total',
+        limit: 18,
+      }).catch(() => []),
+      jamendoSearch({
+        tags: 'vocal,jazz,pop',
+        order: 'popularity_total',
+        limit: 18,
+      }).catch(() => []),
+    ]);
+
+    const playlists = {
+      calm: dedupeTracks(calmRaw.map(formatTrack)).slice(0, 14),
+      soothing: dedupeTracks(soothingRaw.map(formatTrack)).slice(0, 14),
+      singAlong: dedupeTracks(singAlongRaw.map(formatTrack)).slice(0, 14),
+    };
+
+    res.json({ playlists });
+  } catch (err) {
+    console.error('[Music] playlists error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── GET search ────────────────────────────────────────────────────────────────
 router.get('/:patientId/search', async (req, res) => {
   try {
     const { q = '' } = req.query;
-    if (!q.trim()) return res.json({ tracks: [] });
+    const term = String(q || '').trim();
+    if (!term) return res.json({ tracks: [] });
 
-    const tracks = await jamendoSearch({
-      namesearch: q,
-      fuzzytags:  q,
-      order:      'popularity_total',
-      limit:      20,
-    });
+    const [byName, byTags, byArtist] = await Promise.all([
+      jamendoSearch({
+        namesearch: term,
+        order: 'popularity_total',
+        limit: 30,
+      }).catch(() => []),
+      jamendoSearch({
+        fuzzytags: term,
+        order: 'popularity_total',
+        limit: 25,
+      }).catch(() => []),
+      jamendoSearch({
+        artist_name: term,
+        order: 'popularity_total',
+        limit: 25,
+      }).catch(() => []),
+    ]);
 
-    res.json({ tracks: tracks.map(formatTrack) });
+    const tracks = dedupeTracks([...byName, ...byTags, ...byArtist].map(formatTrack)).slice(0, 50);
+    res.json({ tracks });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

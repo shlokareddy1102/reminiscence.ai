@@ -14,6 +14,10 @@ import PatientFamily from "./pages/patient/PatientFamily";
 import PatientMedications from "./pages/patient/PatientMedications";
 import PatientMyDay from "./pages/patient/PatientMyDay";
 import PatientMemories from "./pages/patient/PatientMemories";
+import PatientMusic from "./pages/patient/PatientMusic";
+import PatientNightCheckIn from "./pages/patient/PatientNightCheckIn";
+import GamesDashboard from "./pages/patient/GamesDashboard";
+import GamePlayPage from "./pages/patient/GamePlayPage";
 import CaregiverDashboard from "./pages/caregiver/CaregiverDashboard";
 import CaregiverAlerts from "./pages/caregiver/CaregiverAlerts";
 import CaregiverLocation from "./pages/caregiver/CaregiverLocation";
@@ -24,7 +28,8 @@ import CaregiverPatients from "./pages/caregiver/CaregiverPatients";
 import CaregiverSettings from "./pages/caregiver/CaregiverSettings";
 import CaregiverShell from "./components/caregiver/CaregiverShell";
 import { isPatientPreviewEnabled } from "./lib/auth";
-
+import TestPage from "./pages/patient/TestPage";
+import ReactionGamePage from "./pages/patient/fitt&hickpage";
 const queryClient = new QueryClient();
 
 const PatientRoute = ({ children }) => {
@@ -113,6 +118,12 @@ const App = () => (
           <Route path="/patient/medications" element={<PatientRoute><PatientMedications /></PatientRoute>} />
           <Route path="/patient/day" element={<PatientRoute><PatientMyDay /></PatientRoute>} />
           <Route path="/patient/memories" element={<PatientRoute><PatientMemories /></PatientRoute>} />
+          <Route path="/patient/music" element={<PatientRoute><PatientMusic /></PatientRoute>} />
+          <Route path="/patient/night-check-in" element={<PatientRoute><PatientNightCheckIn /></PatientRoute>} />
+          <Route path="/night-checkin" element={<Navigate to="/patient/night-check-in" replace />} />
+          <Route path="/patient/games" element={<PatientRoute><GamesDashboard /></PatientRoute>} />
+          <Route path="/patient/games/play/:gameId" element={<PatientRoute><GamePlayPage /></PatientRoute>} />
+          <Route path="/games/reaction" element={<ReactionGamePage />} />
           <Route
             path="/caregiver"
             element={
@@ -131,6 +142,7 @@ const App = () => (
             <Route path="contacts" element={<CaregiverContacts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
+          <Route path="/test" element={<TestPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

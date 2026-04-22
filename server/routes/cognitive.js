@@ -2,6 +2,7 @@ const router = require('express').Router();
 const mongoose = require('mongoose');
 const { authenticateToken } = require('../middleware/auth');
 const CognitiveSession = require('../models/CognitiveSession');
+const CognitiveGameSession = require('../models/CognitiveGameSession');
 const Alert = require('../models/Alert');
 const { applyRiskDelta } = require('../services/riskEngine');
 const {
@@ -13,6 +14,14 @@ const {
 } = require('../services/cognitiveCheckInService');
 
 const asObjectId = (id) => (mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null);
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+const summarizeGameTrend = (currentScore, baselineScore) => {
+  if (!Number.isFinite(currentScore) || !Number.isFinite(baselineScore)) return 'stable';
+  if (currentScore - baselineScore >= 6) return 'improving';
+  if (baselineScore - currentScore >= 6) return 'declining';
+  return 'stable';
+};
 
 router.get('/:patientId/session', authenticateToken, async (req, res) => {
   try {
@@ -195,6 +204,97 @@ router.get('/:patientId/trend', authenticateToken, async (req, res) => {
     }));
 
     return res.json({ trend, total: trend.length });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+router.post('/:patientId/tangram/submit', authenticateToken, async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    const objectId = asObjectId(patientId);
+    if (!objectId) return res.status(400).json({ message: 'Invalid patientId' });
+
+    const payloadLevels = Array.isArray(req.body?.levels) ? req.body.levels : [];
+    if (!payloadLevels.length) {
+      return res.status(400).json({ message: 'Levels data is required' });
+    }
+
+    const levels = payloadLevels.map((item, index) => ({
+      levelNumber: Number(item.levelNumber || index + 1),
+      attempts: Math.max(1, Number(item.attempts || 1)),
+      seconds: Math.max(0, Number(item.seconds || 0)),
+      solved: item.solved !== false
+    }));
+
+    const totalAttempts = levels.reduce((sum, item) => sum + item.attempts, 0);
+    const totalSeconds = levels.reduce((sum, item) => sum + item.seconds, 0);
+    const avgAttempts = totalAttempts / levels.length;
+    const avgSeconds = totalSeconds / levels.length;
+    const performanceScore = clamp(Math.round(100 - avgAttempts * 8 - avgSeconds * 0.35), 0, 100);
+
+    const previous = await CognitiveGameSession.find({
+      patientId: objectId,
+      gameType: 'tangram'
+    }).sort({ playedAt: -1 }).limit(6).lean();
+
+    const baselineScore = previous.length
+      ? Math.round(previous.reduce((sum, item) => sum + Number(item.performanceScore || 0), 0) / previous.length)
+      : performanceScore;
+
+    const trend = summarizeGameTrend(performanceScore, baselineScore);
+
+    const session = await CognitiveGameSession.create({
+      patientId: objectId,
+      gameType: 'tangram',
+      levels,
+      totalAttempts,
+      totalSeconds,
+      performanceScore,
+      trend
+    });
+
+    return res.json({
+      session,
+      summary: {
+        totalAttempts,
+        totalSeconds,
+        performanceScore,
+        trend,
+        baselineScore
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/:patientId/tangram/trend', authenticateToken, async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    const objectId = asObjectId(patientId);
+    if (!objectId) return res.status(400).json({ message: 'Invalid patientId' });
+
+    const limit = Math.max(5, Math.min(Number(req.query.limit) || 20, 100));
+    const sessions = await CognitiveGameSession.find({
+      patientId: objectId,
+      gameType: 'tangram'
+    })
+      .sort({ playedAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return res.json({
+      sessions: sessions.map((item) => ({
+        id: item._id,
+        playedAt: item.playedAt,
+        totalAttempts: item.totalAttempts,
+        totalSeconds: item.totalSeconds,
+        performanceScore: item.performanceScore,
+        trend: item.trend,
+        levels: item.levels || []
+      }))
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -3,6 +3,7 @@ import ReactionGame from "@/components/games/fitt&hick";
 import FaceRecognitionGame from "@/components/games/FaceRecognitionGame";
 import MemoryObjectsGame from "@/components/games/MemoryObjectsGame";
 import SequenceGame from "@/components/games/SequenceGame";
+import TangramGame from "@/components/games/TangramGame";
 
 export const gameModules = [
   {
@@ -38,6 +39,15 @@ export const gameModules = [
     description: "Remember and repeat short number sequences",
     icon: BrainCircuit,
     component: SequenceGame,
+  },
+  {
+    id: "tangram",
+    route: "tangram",
+    label: "Tangram",
+    description: "Solve multi-level tangram puzzles with timing",
+    icon: Layers,
+    component: TangramGame,
+    buildProps: ({ patientId }) => ({ patientId }),
   },
 ];
 
