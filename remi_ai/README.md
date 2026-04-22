@@ -58,11 +58,7 @@ Once the services start, open your browser to: **http://localhost:5173**
 | Service | Port | Status Check |
 |---------|------|--------------|
 | React Frontend | 5173 | http://localhost:5173 |
-
-| Node.js Backend | 5001 | http://localhost:5001/api/health |
-=======
 | Node.js Backend | 5001 | http://localhost:5001/health |
-
 | Python Face Service | 5002 | http://localhost:5002/health |
 | MongoDB | 27017 | `mongosh` command |
 
@@ -652,3 +648,4 @@ By transferring cognitive responsibility from the patient to the system, the pro
 
 **Built with ❤️ for dementia care**
 
+---

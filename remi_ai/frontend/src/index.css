@@ -1,0 +1,319 @@
+ @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;
+ 
+ /* Reminiscence Design System - Calm, accessible, and data-focused */
+ 
+ @layer base {
+   :root {
+     --background: 218 44% 98%;
+     --foreground: 220 28% 20%;
+ 
+     --card: 0 0% 100%;
+     --card-foreground: 220 28% 20%;
+ 
+     --popover: 0 0% 100%;
+     --popover-foreground: 220 28% 20%;
+ 
+     /* Primary/Accent from requested teal + sage direction */
+     --primary: 205 56% 46%;
+     --primary-foreground: 0 0% 100%;
+ 
+     --secondary: 206 30% 94%;
+     --secondary-foreground: 205 30% 28%;
+ 
+     --muted: 206 22% 95%;
+     --muted-foreground: 215 16% 45%;
+ 
+     --accent: 160 30% 38%;
+     --accent-foreground: 0 0% 100%;
+ 
+     --safe: 145 58% 42%;
+     --safe-foreground: 0 0% 100%;
+     --warning: 39 86% 56%;
+     --warning-foreground: 29 85% 17%;
+     --alert: 10 73% 57%;
+     --alert-foreground: 0 0% 100%;
+ 
+     --destructive: 10 73% 57%;
+     --destructive-foreground: 0 0% 100%;
+ 
+     --border: 206 25% 88%;
+     --input: 206 24% 92%;
+     --ring: 205 56% 46%;
+ 
+     --radius: 1rem;
+ 
+     /* Sidebar - For caregiver dashboard */
+     --sidebar-background: 206 36% 97%;
+     --sidebar-foreground: 220 28% 23%;
+     --sidebar-primary: 205 56% 46%;
+     --sidebar-primary-foreground: 0 0% 100%;
+     --sidebar-accent: 206 25% 93%;
+     --sidebar-accent-foreground: 220 28% 20%;
+     --sidebar-border: 206 24% 89%;
+     --sidebar-ring: 205 56% 46%;
+ 
+     --patient-gradient: linear-gradient(135deg, hsl(205 56% 46%) 0%, hsl(160 30% 38%) 100%);
+     --calm-shadow: 0 8px 30px -10px hsl(205 56% 46% / 0.25);
+     --gentle-shadow: 0 4px 20px -8px hsl(220 28% 20% / 0.18);
+   }
+ 
+   .dark {
+     --background: 260 25% 8%;
+     --foreground: 260 15% 95%;
+ 
+     --card: 260 25% 12%;
+     --card-foreground: 260 15% 95%;
+ 
+     --popover: 260 25% 10%;
+     --popover-foreground: 260 15% 95%;
+ 
+     --primary: 262 55% 65%;
+     --primary-foreground: 260 25% 8%;
+ 
+     --secondary: 220 30% 20%;
+     --secondary-foreground: 220 30% 90%;
+ 
+     --muted: 260 20% 18%;
+     --muted-foreground: 260 15% 65%;
+ 
+     --accent: 220 60% 55%;
+     --accent-foreground: 0 0% 100%;
+ 
+     --safe: 150 40% 45%;
+     --safe-foreground: 0 0% 100%;
+     --warning: 35 70% 50%;
+     --warning-foreground: 35 90% 10%;
+     --alert: 0 55% 50%;
+     --alert-foreground: 0 0% 100%;
+ 
+     --destructive: 0 55% 50%;
+     --destructive-foreground: 0 0% 100%;
+ 
+     --border: 260 20% 22%;
+     --input: 260 20% 20%;
+     --ring: 262 55% 65%;
+ 
+     --sidebar-background: 260 25% 10%;
+     --sidebar-foreground: 260 15% 90%;
+     --sidebar-primary: 262 55% 65%;
+     --sidebar-primary-foreground: 260 25% 8%;
+     --sidebar-accent: 260 20% 16%;
+     --sidebar-accent-foreground: 260 15% 90%;
+     --sidebar-border: 260 20% 18%;
+     --sidebar-ring: 262 55% 65%;
+   }
+ }
+ 
+ @layer base {
+   * {
+     @apply border-border;
+   }
+ 
+   html {
+     font-size: 18px;
+   }
+ 
+   body {
+     @apply bg-background text-foreground font-body antialiased;
+     line-height: 1.7;
+   }
+ 
+   h1, h2, h3, h4, h5, h6 {
+     @apply font-display font-bold tracking-tight;
+   }
+ }
+ 
+ @layer components {
+   /* Patient-specific calm styles */
+   .patient-container {
+     @apply min-h-screen bg-gradient-to-br from-background via-secondary/40 to-accent/10 p-6 md:p-8;
+   }
+ 
+   .patient-card {
+     @apply bg-card rounded-2xl shadow-calm p-6 md:p-8 border border-border/50;
+   }
+ 
+   .patient-button {
+     @apply bg-primary text-primary-foreground rounded-2xl px-8 py-5 text-xl font-semibold
+            shadow-calm hover:shadow-gentle transition-all duration-300 
+            hover:scale-[1.02] active:scale-[0.98];
+   }
+ 
+   /* Caregiver dashboard styles */
+   .caregiver-container {
+     @apply min-h-screen bg-background;
+   }
+
+   .bg-gradient-animated {
+     background: linear-gradient(130deg, hsl(var(--primary) / 0.22), hsl(var(--accent) / 0.2), hsl(var(--safe) / 0.2), hsl(var(--warning) / 0.15));
+     background-size: 260% 260%;
+     animation: gradient-shift 15s ease infinite;
+   }
+
+   .glass {
+     background: hsl(var(--card) / 0.7);
+     border: 1px solid hsl(var(--border) / 0.7);
+     backdrop-filter: blur(14px);
+   }
+
+   .blob {
+     position: absolute;
+     border-radius: 9999px;
+     filter: blur(18px);
+     opacity: 0.45;
+   }
+
+   .hover-lift {
+     transition: transform 220ms ease, box-shadow 220ms ease;
+   }
+
+   .hover-lift:hover {
+     transform: translateY(-4px);
+     box-shadow: 0 14px 32px -14px hsl(var(--foreground) / 0.34);
+   }
+
+   .glow-pulse {
+     animation: glow-pulse 2.8s ease-in-out infinite;
+   }
+
+   .stagger-in > * {
+     opacity: 0;
+     transform: translateY(10px);
+     animation: stagger-in 420ms ease forwards;
+   }
+
+   .stagger-in > *:nth-child(2) { animation-delay: 90ms; }
+   .stagger-in > *:nth-child(3) { animation-delay: 180ms; }
+   .stagger-in > *:nth-child(4) { animation-delay: 270ms; }
+   .stagger-in > *:nth-child(5) { animation-delay: 360ms; }
+
+   .breathe {
+     animation: breathe 3.3s ease-in-out infinite;
+   }
+
+   .shimmer {
+     position: relative;
+     overflow: hidden;
+   }
+
+   .shimmer::after {
+     content: "";
+     position: absolute;
+     inset: 0;
+     transform: translateX(-120%);
+     background: linear-gradient(100deg, transparent 20%, hsl(var(--card) / 0.35) 45%, transparent 70%);
+     animation: shimmer 2.5s ease-in-out infinite;
+   }
+
+   .wave {
+     transform-origin: 70% 70%;
+     animation: wave 2.8s ease-in-out infinite;
+   }
+
+   .bg-dots {
+     background-image: radial-gradient(hsl(var(--foreground) / 0.1) 0.75px, transparent 0.75px);
+     background-size: 16px 16px;
+   }
+
+   .bg-grid {
+     background-image: linear-gradient(to right, hsl(var(--border) / 0.45) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border) / 0.45) 1px, transparent 1px);
+     background-size: 28px 28px;
+   }
+ 
+   .status-safe {
+     @apply bg-safe/15 text-safe border-safe/30;
+   }
+ 
+   .status-warning {
+     @apply bg-warning/15 text-warning border-warning/30;
+   }
+ 
+   .status-alert {
+     @apply bg-alert/15 text-alert border-alert/30;
+   }
+ }
+ 
+ @layer utilities {
+   .shadow-calm {
+     box-shadow: var(--calm-shadow);
+   }
+ 
+   .shadow-gentle {
+     box-shadow: var(--gentle-shadow);
+   }
+ 
+   .animate-pulse-gentle {
+     animation: pulse-gentle 3s ease-in-out infinite;
+   }
+ 
+   @keyframes pulse-gentle {
+     0%, 100% { opacity: 1; }
+     50% { opacity: 0.7; }
+   }
+ 
+   .animate-fade-in {
+     animation: fade-in 0.5s ease-out;
+   }
+ 
+   @keyframes fade-in {
+     from { opacity: 0; transform: translateY(8px); }
+     to { opacity: 1; transform: translateY(0); }
+   }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.1); }
+      50% { box-shadow: 0 0 0 10px hsl(var(--primary) / 0.02); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shimmer {
+      100% { transform: translateX(120%); }
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(9deg); }
+      40% { transform: rotate(-5deg); }
+      60% { transform: rotate(7deg); }
+      80% { transform: rotate(-2deg); }
+    }
+
+    @keyframes stagger-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-gradient-animated,
+      .blob,
+      .float,
+      .glow-pulse,
+      .stagger-in > *,
+      .breathe,
+      .shimmer::after,
+      .wave,
+      .animate-fade-in,
+      .animate-pulse-gentle {
+        animation: none !important;
+      }
+
+      .hover-lift,
+      .hover-lift:hover {
+        transition: none;
+        transform: none;
+      }
+    }
+ }
